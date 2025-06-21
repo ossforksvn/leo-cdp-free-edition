@@ -7,6 +7,8 @@ services:
     container_name: arangodb
     environment:
       ARANGO_ROOT_PASSWORD: FormulaLeo#2020
+    networks:
+      - net_leocdp
     ports:
       - 8601:8529
     volumes:
@@ -16,3 +18,6 @@ services:
 volumes:
   arangodb_data_container:
   arangodb_apps_data_container:
+
+networks:
+  net_leocdp:

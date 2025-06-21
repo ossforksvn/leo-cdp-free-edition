@@ -1,8 +1,8 @@
 FROM amazoncorretto:11
 
-# Install required packages, including pgrep (from procps-ng)
+# Install required packages, including telnet and ping (iputils)
 RUN yum update -y && \
-    yum install -y git fontconfig nano net-tools nginx redis procps-ng && \
+    yum install -y git fontconfig nano net-tools nginx redis procps-ng telnet iputils && \
     yum clean all
 
 # Create user and group
