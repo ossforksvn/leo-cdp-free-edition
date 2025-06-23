@@ -1,0 +1,70 @@
+services:
+  kafdrop.leocdp:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: leocdp_kafdrop
+    restart: "no"
+    networks:
+      - net_leocdp
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka.leocdp:29092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka.leocdp"
+
+  zookeeper.leocdp:
+    image: wurstmeister/zookeeper
+    container_name: leocdp_zookeeper
+    networks:
+      - net_leocdp
+    ports:
+      - "2181:2181"
+
+  kafka.leocdp:
+    image: wurstmeister/kafka
+    container_name: leocdp_kafka
+    networks:
+      - net_leocdp
+    ports:
+      - "9092:9092"
+    links:
+      - zookeeper.leocdp
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper.leocdp:2181
+      KAFKA_NUM_PARTITIONS: 2
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CREATE_TOPICS: LeoCdpEvent:2:1, LeoCdpProfile:2:1
+
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka.leocdp:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+
+  arangodb.leocdp:
+    image: arangodb:latest
+    container_name: leocdp_arangodb
+    restart: unless-stopped
+    networks:
+      - net_leocdp
+    ports:
+      - 8601:8529
+    volumes:
+      - arangodb_data_container:/var/lib/arangodb3
+      - arangodb_apps_data_container:/var/lib/arangodb3-apps
+    environment:
+      ARANGO_ROOT_PASSWORD: FormulaLeo#2020
+
+volumes:
+  arangodb_data_container:
+  arangodb_apps_data_container:
+
+networks:
+  net_leocdp:
