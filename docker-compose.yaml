@@ -18,16 +18,16 @@ services:
     container_name: leocdp_zookeeper
     networks:
       - net_leocdp
-    ports:
-      - "2181:2181"
+    # ports:
+    #   - "2181:2181"
 
   kafka.leocdp:
     image: wurstmeister/kafka
     container_name: leocdp_kafka
     networks:
       - net_leocdp
-    ports:
-      - "9092:9092"
+    # ports:
+    #   - "9092:9092"
     links:
       - zookeeper.leocdp
     environment:
@@ -47,6 +47,15 @@ services:
       KAFKA_RESTART_ATTEMPTS: "10"
       KAFKA_RESTART_DELAY: "5"
       ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+
+  redis.leocdp:
+    image: redis:6
+    container_name: leocdp_redis
+    restart: unless-stopped
+    networks:
+      - net_leocdp
+    # ports:
+    #   - "6379:6379"
 
   arangodb.leocdp:
     image: arangodb:latest

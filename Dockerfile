@@ -2,7 +2,7 @@ FROM amazoncorretto:11
 
 # Install required packages, including telnet and ping (iputils)
 RUN yum update -y && \
-    yum install -y git fontconfig nano net-tools nginx redis procps-ng telnet iputils && \
+    yum install -y git fontconfig nano net-tools nginx procps-ng telnet iputils && \
     yum clean all
 
 # Create user and group
@@ -26,6 +26,6 @@ RUN chown -R cdpsysuser:cdpsysuser ${CDP_WORKDIR}
 
 USER cdpsysuser
 
-EXPOSE 8600 80 6379
+EXPOSE 80
 
-CMD ["bash"]
+CMD ["sh", "-c", "bash"]
